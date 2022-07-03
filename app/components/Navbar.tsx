@@ -10,13 +10,12 @@ import { makeStyles, useTheme } from '@mui/styles';
 import useThemeMode from 'hooks/useThemeMode';
 import { Theme } from '@mui/material';
 import { CustomTheme } from 'lib/theme';
-/*
-import dynamic from "next/dynamic";
-const ConnectWallet = dynamic(() => import("./ConnectWallet"), {
+import dynamic from 'next/dynamic';
+
+const ConnectWallet = dynamic(() => import('./ConnectWallet'), {
   ssr: false,
 });
-<ConnectWallet />
-*/
+
 const Navbar = () => {
   const classes = useStyles();
   const theme = useTheme<CustomTheme>();
@@ -38,6 +37,7 @@ const Navbar = () => {
             <ToggleDarkModeIcon htmlColor={theme.custom.palette.iconColor} />
           )}
         </IconButton>
+        <ConnectWallet />
       </Toolbar>
     </AppBar>
   );

@@ -1,59 +1,72 @@
 // https://next-auth.js.org/getting-started/example
 
 import NextAuth from 'next-auth';
-import Credentials from 'next-auth/providers/credentials';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { getCsrfToken } from 'next-auth/react';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { SiweMessage } from 'siwe';
 
-export interface Credentials {
-  password?: string;
-  username?: string;
-}
-
-export default NextAuth({
-  providers: [
-    Credentials({
-      name: 'Credentials',
+export default async function auth(req: NextApiRequest, res: NextApiResponse) {
+  const providers = [
+    CredentialsProvider({
+      name: 'Ethereum',
       credentials: {
-        username: { label: 'Username', type: 'text', placeholder: 'user name' },
-        password: { label: 'Password', type: 'password', placeholder: 'password' },
+        message: {
+          label: 'Message',
+          type: 'text',
+          placeholder: '0x0',
+        },
+        signature: {
+          label: 'Signature',
+          type: 'text',
+          placeholder: '0x0',
+        },
       },
       async authorize(credentials) {
-        if (
-          credentials?.username === process.env.CREDENTIAL_USERNAME &&
-          credentials?.password === process.env.CREDENTIAL_PASSWORD
-        ) {
+        try {
+          const siwe = new SiweMessage(JSON.parse(credentials?.message || '{}'));
+          const nextAuthUrl = new URL(process.env.NEXTAUTH_URL || '');
+          if (siwe.domain !== nextAuthUrl.host) {
+            return null;
+          }
+
+          if (siwe.nonce !== (await getCsrfToken({ req }))) {
+            return null;
+          }
+
+          await siwe.validate(credentials?.signature || '');
           return {
-            name: process.env.CREDENTIAL_USERNAME,
-            id: 999,
-            email: process.env.CREDENTIAL_USERNAME + '@easter.egg',
+            id: siwe.address,
           };
+        } catch (e) {
+          return null;
         }
-        return null;
       },
     }),
-    // // https://next-auth.js.org/providers/google
-    // Providers.Google({
-    //     clientId: process.env.GOOGLE_CLIENT_ID,
-    //     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    // }),
-    // // https://next-auth.js.org/providers/okta
-    // Providers.Okta({
-    //     clientId: process.env.OKTA_CLIENT_ID,
-    //     clientSecret: process.env.OKTA_CLIENT_SECRET,
-    //     domain: process.env.OKTA_DOMAIN,
-    // }),
-  ],
-  secret: process.env.SECRET,
-  session: {
-    // Use JSON Web Tokens for session instead of database sessions.
-    // This option can be used with or without a database for users/accounts.
-    // Seconds - How long until an idle session expires and is no longer valid.
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-  },
-  callbacks: {
-    // signIn: async (user, account, profile) => { return Promise.resolve(true) },
-    // redirect: async (url, baseUrl) => { return Promise.resolve(baseUrl) },
-    // session: async (session, user) => { return Promise.resolve(session) },
-    // jwt: async (token, user, account, profile, isNewUser) => { return Promise.resolve(token) }
-  },
-  debug: false,
-});
+  ];
+
+  const isDefaultSigninPage = req.method === 'GET' && req.query.nextauth?.includes('signin');
+
+  // Hides Sign-In with Ethereum from default sign page
+  if (isDefaultSigninPage) {
+    providers.pop();
+  }
+  return await NextAuth(req, res, {
+    // https://next-auth.js.org/configuration/providers/oauth
+    providers,
+    session: {
+      strategy: 'jwt',
+      maxAge: 30 * 24 * 60 * 60, // 30 days
+    },
+    secret: process.env.SECRET,
+    callbacks: {
+      async session({ session, token }) {
+        session.address = token.sub;
+        session.user.name = token.sub;
+        session.user.image = 'https://www.fillmurray.com/128/128';
+        return session;
+      },
+    },
+    debug: false,
+  });
+}
