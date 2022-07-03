@@ -1,11 +1,10 @@
 // https://testing-library.com/docs/react-testing-library/setup/
-
 import React from 'react';
 import { render } from '@testing-library/react';
 import { RouterContext } from 'next/dist/shared/lib/router-context';
 import { NextRouter } from 'next/router';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material';
-import theme from 'lib/theme';
+import { darkTheme } from 'lib/theme';
 
 export * from '@testing-library/react';
 
@@ -24,39 +23,48 @@ type RenderUI = DefaultParams[0];
 type RenderOptions = DefaultParams[1] & { router?: Partial<NextRouter> };
 
 const mockRouter: NextRouter = {
-    basePath: '',
-    isReady: true,
-    pathname: '/',
-    route: '/',
-    asPath: '/',
-    query: {},
-    push: jest.fn(),
-    replace: jest.fn(),
-    reload: jest.fn(),
-    back: jest.fn(),
-    prefetch: jest.fn(),
-    beforePopState: jest.fn(),
-    events: {
-        on: jest.fn(),
-        off: jest.fn(),
-        emit: jest.fn(),
-    },
-    isFallback: false,
-    isLocaleDomain: false,
-    isPreview: false,
+  basePath: '',
+  isReady: true,
+  pathname: '/',
+  route: '/',
+  asPath: '/',
+  query: {},
+  push: jest.fn(),
+  replace: jest.fn(),
+  reload: jest.fn(),
+  back: jest.fn(),
+  prefetch: jest.fn(),
+  beforePopState: jest.fn(),
+  events: {
+    on: jest.fn(),
+    off: jest.fn(),
+    emit: jest.fn(),
+  },
+  isFallback: false,
+  isLocaleDomain: false,
+  isPreview: false,
 };
+
+jest.mock('next/head', () => {
+  return {
+    __esModule: true,
+    default: ({ children }: { children: Array<React.ReactElement> }) => {
+      return <>{children}</>;
+    },
+  };
+});
 
 // Where you add your providers for mock testing wrapper
 export function customRender(ui: RenderUI, { wrapper, router, ...options }: RenderOptions = {}) {
-    wrapper = ({ children }) => (
-        <StyledEngineProvider injectFirst>
-            <ThemeProvider theme={theme}>
-                <RouterContext.Provider value={{ ...mockRouter, ...router }}>{children}</RouterContext.Provider>
-            </ThemeProvider>
-        </StyledEngineProvider>
-    );
+  wrapper = ({ children }) => (
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={darkTheme}>
+        <RouterContext.Provider value={{ ...mockRouter, ...router }}>{children}</RouterContext.Provider>
+      </ThemeProvider>
+    </StyledEngineProvider>
+  );
 
-    return render(ui, { wrapper, ...options });
+  return render(ui, { wrapper, ...options });
 }
 
 // re-export everything

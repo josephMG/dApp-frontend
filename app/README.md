@@ -1,22 +1,25 @@
 # Next.js TypeScript Material UI quality checking project
+
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
 [![All Contributors](https://img.shields.io/badge/all_contributors-7-orange.svg?style=flat-square)](#contributors-)
+
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Includes TypeScript, Material UI, ESLint, Jest, and React Testing Library
 
--   [Deploy your own](#deploy-your-own)
--   [How to use](#how-to-use)
--   [Scripts](#scripts)
-    -   [build](#build)
-    -   [dev](#dev)
-    -   [format](#format)
-    -   [lint](#lint)
-    -   [start](#start)
-    -   [test](#test)
-    -   [type-check](#type-check)
-    -   [quality](#quality)
--   [Accessibility ](#accessibility)
+- [Deploy your own](#deploy-your-own)
+- [How to use](#how-to-use)
+- [Scripts](#scripts)
+  - [build](#build)
+  - [dev](#dev)
+  - [format](#format)
+  - [lint](#lint)
+  - [start](#start)
+  - [test](#test)
+  - [type-check](#type-check)
+  - [quality](#quality)
+- [Accessibility ](#accessibility)
 
 ## Deploy your own
 

@@ -4,34 +4,34 @@ import Home, { getServerSideProps } from 'pages/index';
 import { tools } from 'lib/tools';
 
 describe('Home page', () => {
-    it('should render without errors', async () => {
-        render(<Home tools={tools.map(({ name, image }) => ({ name, image }))} />);
+  it('should render without errors', async () => {
+    render(<Home tools={tools.map(({ name, image }) => ({ name, image }))} />);
 
-        // tools header
-        expect(screen.getByRole('heading', { name: 'Tools' })).toBeInTheDocument();
-        // array of tools
-        expect(screen.getAllByRole('listitem').length).toEqual(tools.length);
-        expect(screen.getAllByRole('link').length).toEqual(tools.length);
+    // tools header
+    expect(screen.getByRole('heading', { name: 'Next.js Web3 starter' })).toBeInTheDocument();
+    // array of tools
+    expect(screen.getAllByRole('listitem').length).toEqual(tools.length);
+    expect(screen.getAllByRole('link').length).toEqual(tools.length);
 
-        const firstTool = screen.getAllByRole('listitem')[0];
-        // Semantics check of 'link button' is anchor tag to tool page ( Accessibility test )
-        expect(firstTool.querySelector('a')).toBeInTheDocument();
-        // image
-        expect(firstTool.querySelector('img')).toBeInTheDocument();
-        // name
-        // @ts-ignore
-        expect(firstTool.querySelector('p', { name: tools[0].name })).toBeInTheDocument();
+    const firstTool = screen.getAllByRole('listitem')[0];
+    // Semantics check of 'link button' is anchor tag to tool page ( Accessibility test )
+    expect(firstTool.querySelector('a')).toBeInTheDocument();
+    // image
+    expect(firstTool.querySelector('img')).toBeInTheDocument();
+    // name
+    // @ts-ignore
+    expect(firstTool.querySelector('p', { name: tools[0].name })).toBeInTheDocument();
+  });
+  it('serverSideProps', async () => {
+    // @ts-ignore
+    const response = await getServerSideProps();
+    expect(response).toEqual({
+      props: {
+        tools: tools.map(({ name, image }) => ({
+          name,
+          image,
+        })),
+      },
     });
-    it('serverSideProps', async () => {
-        // @ts-ignore
-        const response = await getServerSideProps();
-        expect(response).toEqual({
-            props: {
-                tools: tools.map(({ name, image }) => ({
-                    name,
-                    image,
-                })),
-            },
-        });
-    });
+  });
 });
