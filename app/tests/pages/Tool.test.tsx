@@ -5,7 +5,7 @@ import { tools } from 'lib/tools';
 
 describe('Tool Page', () => {
   it('should render  a page without errors', async () => {
-    await render(<Tool tool={tools[0]} />);
+    render(<Tool tool={tools[0]} />);
 
     // go home button
     expect(screen.getByRole('link', { name: 'Home' })).toBeInTheDocument();
@@ -19,7 +19,7 @@ describe('Tool Page', () => {
     expect(screen.getByText(`Visit ${tools[0].name} documentation`)).toBeInTheDocument();
   });
   it('should render a tool not found if no tool is passed', async () => {
-    await render(<Tool></Tool>);
+    render(<Tool></Tool>);
     // go home button
     expect(screen.getByRole('link', { name: 'Home' })).toBeInTheDocument();
     // header

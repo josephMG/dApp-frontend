@@ -54,6 +54,13 @@ jest.mock('next/head', () => {
   };
 });
 
+jest.mock('next/dynamic', () => () => {
+  const DynamicComponent = () => null;
+  DynamicComponent.displayName = 'LoadableComponent';
+  DynamicComponent.preload = jest.fn();
+  return DynamicComponent;
+});
+
 // Where you add your providers for mock testing wrapper
 export function customRender(ui: RenderUI, { wrapper, router, ...options }: RenderOptions = {}) {
   wrapper = ({ children }) => (
