@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import NextImage from 'next/image';
 import { Avatar, Theme } from '@mui/material';
 import { createStyles, makeStyles } from '@mui/styles';
-import { Image as ImageType } from '../pages';
+import { Image as ImageType } from '@/types';
 
 interface Props {
   image: ImageType | undefined;

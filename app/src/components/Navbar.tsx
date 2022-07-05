@@ -7,9 +7,9 @@ import {
   Brightness5Outlined as ToggleLightModeIcon,
 } from '@mui/icons-material';
 import { makeStyles, useTheme } from '@mui/styles';
-import useThemeMode from 'hooks/useThemeMode';
+import useThemeMode from '@/hooks/useThemeMode';
 import { Theme } from '@mui/material';
-import { CustomTheme } from 'lib/theme';
+import { CustomTheme } from '@/libs/theme';
 import dynamic from 'next/dynamic';
 
 const ConnectWallet = dynamic(() => import('./ConnectWallet'), {

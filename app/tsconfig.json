@@ -18,7 +18,14 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "esnext",
-    "incremental": true
+    "incremental": true,
+    "paths": {
+      "@/pages/*": ["./pages/*"],
+      "@/components/*": ["src/components/*"],
+      "@/libs/*": ["src/libs/*"],
+      "@/hooks/*": ["src/hooks/*"],
+      "@/types": ["src/types"]
+    }
   },
   "exclude": ["node_modules"],
   "include": ["**/*.ts", "**/*.tsx", "setupTests.js", "setupTests.js"]

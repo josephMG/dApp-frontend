@@ -5,8 +5,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 // import useMediaQuery from '@mui/material/useMediaQuery';
 import React, { useEffect, useState } from 'react';
 
-import { darkTheme, lightTheme } from '../lib/theme';
-import useThemeMode from 'hooks/useThemeMode';
+import { darkTheme, lightTheme } from '@/libs/theme';
+import useThemeMode from '@/hooks/useThemeMode';
 
 // Determines if we are running on server or in client.
 const isServerSideRendered = () => {

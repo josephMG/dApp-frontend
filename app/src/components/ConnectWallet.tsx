@@ -3,7 +3,7 @@ import Blockies from 'react-blockies';
 
 import { makeStyles } from '@mui/styles';
 
-import { useWeb3Modal } from '../hooks/useWeb3';
+import { useWeb3Modal } from '@/hooks/useWeb3';
 
 const truncateAddress = (address: string) => {
   return address.slice(0, 6) + '...' + address.slice(-4);

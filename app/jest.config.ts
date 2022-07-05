@@ -13,11 +13,11 @@ const config: Config.InitialOptions = {
   verbose: true,
   testEnvironment: 'jest-environment-jsdom',
   moduleNameMapper: {
-    '^components/(.*)$': '<rootDir>/components/$1',
     '^pages/(.*)$': '<rootDir>/pages/$1',
-    '^lib/(.*)$': '<rootDir>/lib/$1',
     '^tests/(.*)': '<rootDir>/tests/$1',
-    '^hooks/(.*)': '<rootDir>/hooks/$1',
+    '^@/components/(.*)$': '<rootDir>/src/components/$1',
+    '^@/libs/(.*)$': '<rootDir>/src/libs/$1',
+    '^@/hooks/(.*)': '<rootDir>/src/hooks/$1',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },
 };

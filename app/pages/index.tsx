@@ -1,10 +1,11 @@
 import { GetServerSideProps } from 'next';
 import { Typography, Theme, List, Grid } from '@mui/material';
 import { createStyles, makeStyles } from '@mui/styles';
-import Layout from 'components/layout';
-import ListItem, { Link } from 'components/list/ListItem';
+import Layout from '@/components/layout';
+import ListItem, { Link } from '@/components/list/ListItem';
 
-import { tools } from 'lib/tools';
+import { tools } from '@/libs/tools';
+import { Image } from '@/types';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -24,7 +25,6 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export type Image = { src: string; width: number; height: number };
 interface Props {
   tools: { name: string; image?: Image }[];
 }

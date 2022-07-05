@@ -4,7 +4,7 @@ import { render } from '@testing-library/react';
 import { RouterContext } from 'next/dist/shared/lib/router-context';
 import { NextRouter } from 'next/router';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material';
-import { darkTheme } from 'lib/theme';
+import { darkTheme } from '@/libs/theme';
 
 export * from '@testing-library/react';
 
