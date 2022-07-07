@@ -1,10 +1,13 @@
 // https://testing-library.com/docs/react-testing-library/setup/
 import React from 'react';
+import { SessionProvider } from 'next-auth/react';
 import { render } from '@testing-library/react';
 import { RouterContext } from 'next/dist/shared/lib/router-context';
 import { NextRouter } from 'next/router';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material';
 import { darkTheme } from '@/libs/theme';
+import DappWagmiProvider from '@/components/WagmiProvider';
+import { mockSession } from "./helpers"
 
 export * from '@testing-library/react';
 
@@ -64,11 +67,15 @@ jest.mock('next/dynamic', () => () => {
 // Where you add your providers for mock testing wrapper
 export function customRender(ui: RenderUI, { wrapper, router, ...options }: RenderOptions = {}) {
   wrapper = ({ children }) => (
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={darkTheme}>
-        <RouterContext.Provider value={{ ...mockRouter, ...router }}>{children}</RouterContext.Provider>
-      </ThemeProvider>
-    </StyledEngineProvider>
+    <DappWagmiProvider>
+      <SessionProvider session={mockSession}>
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={darkTheme}>
+            <RouterContext.Provider value={{ ...mockRouter, ...router }}>{children}</RouterContext.Provider>
+          </ThemeProvider>
+        </StyledEngineProvider>
+      </SessionProvider>
+    </DappWagmiProvider>
   );
 
   return render(ui, { wrapper, ...options });

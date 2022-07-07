@@ -10,15 +10,18 @@ import { makeStyles, useTheme } from '@mui/styles';
 import useThemeMode from '@/hooks/useThemeMode';
 import { Theme } from '@mui/material';
 import { CustomTheme } from '@/libs/theme';
+import ConnectWallet from './SiweConnectWallet';
+import { useIsMounted } from '@/hooks/useIsMounted';
+/*
 import dynamic from 'next/dynamic';
-
 const ConnectWallet = dynamic(() => import('./ConnectWallet'), {
   ssr: false,
 });
-
+ */
 const Navbar = () => {
   const classes = useStyles();
   const theme = useTheme<CustomTheme>();
+  const isMounted = useIsMounted();
   const { darkMode, toggleMode } = useThemeMode();
 
   return (
@@ -37,7 +40,7 @@ const Navbar = () => {
             <ToggleDarkModeIcon htmlColor={theme.custom.palette.iconColor} />
           )}
         </IconButton>
-        <ConnectWallet />
+        {isMounted && <ConnectWallet />}
       </Toolbar>
     </AppBar>
   );

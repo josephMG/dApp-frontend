@@ -4,6 +4,9 @@ import Tool, { getStaticPaths, getStaticProps } from 'pages/tool/[name]';
 import { tools } from '@/libs/tools';
 
 describe('Tool Page', () => {
+  beforeEach(() => {
+    fetchMock.mockResponseOnce(JSON.stringify({ a: 1 }), { status: 200 });
+  });
   it('should render  a page without errors', async () => {
     render(<Tool tool={tools[0]} />);
 

@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 
 import { darkTheme, lightTheme } from '@/libs/theme';
 import useThemeMode from '@/hooks/useThemeMode';
+import DappWagmiProvider from '@/components/WagmiProvider';
 
 // Determines if we are running on server or in client.
 const isServerSideRendered = () => {
@@ -43,15 +44,17 @@ const App = ({ Component, pageProps }: AppProps) => {
   const muiTheme = darkMode ? lightTheme : darkTheme;
 
   return (
-    <SessionProvider session={pageProps.session}>
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={muiTheme}>
-          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-          <CssBaseline />
-          <Component {...pageProps} isMobile={isMobile} />
-        </ThemeProvider>
-      </StyledEngineProvider>
-    </SessionProvider>
+    <DappWagmiProvider>
+      <SessionProvider session={pageProps.session}>
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={muiTheme}>
+            {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+            <CssBaseline />
+            <Component {...pageProps} isMobile={isMobile} />
+          </ThemeProvider>
+        </StyledEngineProvider>
+      </SessionProvider>
+    </DappWagmiProvider>
   );
 };
 

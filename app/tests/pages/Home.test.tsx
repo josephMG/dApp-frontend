@@ -4,6 +4,9 @@ import Home, { getServerSideProps } from 'pages/index';
 import { tools } from '@/libs/tools';
 
 describe('Home page', () => {
+  beforeEach(() => {
+    fetchMock.mockResponseOnce(JSON.stringify({ a: 1 }), { status: 200 });
+  });
   it('should render without errors', async () => {
     render(<Home tools={tools.map(({ name, image }) => ({ name, image }))} />);
 
