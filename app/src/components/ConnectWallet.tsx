@@ -1,47 +1,105 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Blockies from 'react-blockies';
 
 import { makeStyles } from '@mui/styles';
 
-import { useWeb3Modal } from '@/hooks/useWeb3';
-
-const truncateAddress = (address: string) => {
-  return address.slice(0, 6) + '...' + address.slice(-4);
-};
+import { SiweMessage } from 'siwe';
+import { getCsrfToken, signIn } from 'next-auth/react';
+import { useSignMessage, useAccount, useNetwork, useDisconnect, useConnect } from 'wagmi';
+// import { useWeb3Modal } from '@/hooks/useWeb3';
+import { truncateAddress } from '@/libs/helpers';
 
 const ConnectWallet = () => {
   const classes = useStyles();
-
-  const [signerAddress, setSignerAddress] = useState('');
   // const [isWaiting, setWaiting] = useState(false)
   // const [isSent, setSent] = useState(false)
   // const [walletNotDetected, setWalletNotDetected] = useState(false)
 
-  const { connectWallet, disconnectWallet, provider } = useWeb3Modal();
+  const [state, setState] = useState<{
+    loading?: boolean;
+    nonce?: string;
+  }>({});
 
+  // Pre-fetch random nonce when button is rendered
+  // to ensure deep linking works for WalletConnect
+  // users on iOS when signing the SIWE message
   useEffect(() => {
-    const getAddress = async () => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const signer = provider!.getSigner();
-      const address = await signer.getAddress();
-      setSignerAddress(address);
-    };
-    if (provider) getAddress();
-    else setSignerAddress('');
-  }, [provider]);
+    fetchNonce();
+  }, []);
+
+  const fetchNonce = async () => {
+    try {
+      /*
+      const nonceRes = await fetch('/api/nonce')
+      const nonce = await nonceRes.text()
+       */
+      const nonce = await getCsrfToken();
+      setState((x) => ({ ...x, nonce }));
+    } catch (error) {
+      setState((x) => ({ ...x, error: error as Error }));
+    }
+  };
+  const connectData = useConnect();
+  const { signMessageAsync } = useSignMessage();
+  const { chain: activeChain } = useNetwork();
+  const { address } = useAccount();
+  const { disconnect } = useDisconnect();
 
   const handleClickConnect = async () => {
-    await connectWallet();
+    try {
+      await connectData.connect({ connector: connectData.connectors[0] });
+      const callbackUrl = '/protected';
+      const chainId = activeChain?.id;
+      if (!address || !chainId) return;
+
+      setState((x) => ({ ...x, loading: true }));
+
+      const message = new SiweMessage({
+        domain: window.location.host,
+        address,
+        statement: 'Sign in with Ethereum to the app.',
+        uri: window.location.origin,
+        version: '1',
+        chainId,
+        nonce: state.nonce,
+      });
+      const signature = await signMessageAsync({
+        message: message.prepareMessage(),
+      });
+      signIn('credentials', { message: JSON.stringify(message), redirect: false, signature, callbackUrl });
+      // Create SIWE message with pre-fetched nonce and sign with wallet
+
+      // Verify signature
+      /*
+      const verifyRes = await fetch('/api/verify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message, signature }),
+      });
+      if (!verifyRes.ok) throw new Error('Error verifying message');
+       */
+
+      setState((x) => ({ ...x, loading: false }));
+    } catch (error) {
+      setState((x) => ({ ...x, loading: false, nonce: undefined }));
+      fetchNonce();
+    }
   };
 
-  const handleClickAddress = () => {
-    disconnectWallet();
-  };
+  const handleClickAddress = useCallback(async () => {
+    disconnect();
+  }, []);
 
   return (
-    <button className={classes.btn} onClick={signerAddress ? handleClickAddress : handleClickConnect}>
-      <Blockies className={classes.img} seed={signerAddress.toLowerCase()} size={8} scale={3} />
-      <div>{signerAddress ? truncateAddress(signerAddress) : 'Connect Wallet'}</div>
+    <button
+      className={classes.btn}
+      disabled={!state.nonce || state.loading}
+      onClick={address ? handleClickAddress : handleClickConnect}
+    >
+      <Blockies className={classes.img} seed={address?.toLowerCase() || ''} size={8} scale={3} />
+      <div>{address ? truncateAddress(address) : 'Connect Wallet'}</div>
     </button>
   );
 };

@@ -10,7 +10,7 @@ import { makeStyles, useTheme } from '@mui/styles';
 import useThemeMode from '@/hooks/useThemeMode';
 import { Theme } from '@mui/material';
 import { CustomTheme } from '@/libs/theme';
-import ConnectWallet from './SiweConnectWallet';
+import ConnectWallet from './ConnectWallet';
 import { useIsMounted } from '@/hooks/useIsMounted';
 /*
 import dynamic from 'next/dynamic';
