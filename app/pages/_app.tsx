@@ -1,11 +1,14 @@
 import { AppProps } from 'next/app';
+import Head from 'next/head';
 import { SessionProvider } from 'next-auth/react';
-import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
+import { CacheProvider, EmotionCache } from '@emotion/react';
 import CssBaseline from '@mui/material/CssBaseline';
 // import useMediaQuery from '@mui/material/useMediaQuery';
 import React, { useEffect, useState } from 'react';
 
 import { darkTheme, lightTheme } from '@/libs/theme';
+import createEmotionCache from '@/libs/createEmotionCache';
 import useThemeMode from '@/hooks/useThemeMode';
 import DappWagmiProvider from '@/components/WagmiProvider';
 
@@ -13,6 +16,7 @@ import DappWagmiProvider from '@/components/WagmiProvider';
 const isServerSideRendered = () => {
   return typeof window === 'undefined';
 };
+const clientSideEmotionCache = createEmotionCache();
 
 /**
  * Accessibility tool - outputs to devtools console on dev only and client-side only.
@@ -26,18 +30,16 @@ if (process.env.NODE_ENV !== 'production' && !isServerSideRendered()) {
   });
 }
 
-const App = ({ Component, pageProps }: AppProps) => {
+interface MyAppProps extends AppProps {
+  emotionCache?: EmotionCache;
+}
+
+const App = ({ Component, emotionCache = clientSideEmotionCache, pageProps }: MyAppProps) => {
   // const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const [isMobile, setIsMobile] = useState(false);
   const { darkMode } = useThemeMode();
 
   useEffect(() => {
-    // Remove the server-side injected CSS.
-    const jssStyles = document.querySelector('#jss-server-side');
-    if (jssStyles) {
-      jssStyles.parentElement?.removeChild(jssStyles);
-    }
-    // Naive check for mobile
     setIsMobile(!!navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(android)|(webOS)/i));
   }, []);
 
@@ -46,13 +48,16 @@ const App = ({ Component, pageProps }: AppProps) => {
   return (
     <DappWagmiProvider>
       <SessionProvider session={pageProps.session}>
-        <StyledEngineProvider injectFirst>
+        <CacheProvider value={emotionCache}>
+          <Head>
+            <meta name="viewport" content="initial-scale=1, width=device-width" />
+          </Head>
           <ThemeProvider theme={muiTheme}>
             {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
             <CssBaseline />
             <Component {...pageProps} isMobile={isMobile} />
           </ThemeProvider>
-        </StyledEngineProvider>
+        </CacheProvider>
       </SessionProvider>
     </DappWagmiProvider>
   );

@@ -4,10 +4,12 @@ import { SessionProvider } from 'next-auth/react';
 import { render } from '@testing-library/react';
 import { RouterContext } from 'next/dist/shared/lib/router-context';
 import { NextRouter } from 'next/router';
-import { ThemeProvider, StyledEngineProvider } from '@mui/material';
+import { ThemeProvider } from '@mui/material';
+import { CacheProvider } from '@emotion/react';
 import { darkTheme } from '@/libs/theme';
 import DappWagmiProvider from '@/components/WagmiProvider';
-import { mockSession } from "./helpers"
+import createEmotionCache from '@/libs/createEmotionCache';
+import { mockSession } from './helpers';
 
 export * from '@testing-library/react';
 
@@ -57,23 +59,39 @@ jest.mock('next/head', () => {
   };
 });
 
+const RESET_MODULE_EXCEPTIONS = ['react', 'wagmi'];
+
+let mockActualRegistry: Record<string, any> = {};
+
+RESET_MODULE_EXCEPTIONS.forEach((moduleName) => {
+  jest.doMock(moduleName, () => {
+    if (!mockActualRegistry[moduleName]) {
+      mockActualRegistry[moduleName] = jest.requireActual(moduleName);
+    }
+    return mockActualRegistry[moduleName];
+  });
+});
+
+/*
 jest.mock('next/dynamic', () => () => {
   const DynamicComponent = () => null;
   DynamicComponent.displayName = 'LoadableComponent';
   DynamicComponent.preload = jest.fn();
   return DynamicComponent;
 });
+ */
+const clientSideEmotionCache = createEmotionCache();
 
 // Where you add your providers for mock testing wrapper
 export function customRender(ui: RenderUI, { wrapper, router, ...options }: RenderOptions = {}) {
   wrapper = ({ children }) => (
     <DappWagmiProvider>
       <SessionProvider session={mockSession}>
-        <StyledEngineProvider injectFirst>
+        <CacheProvider value={clientSideEmotionCache}>
           <ThemeProvider theme={darkTheme}>
             <RouterContext.Provider value={{ ...mockRouter, ...router }}>{children}</RouterContext.Provider>
           </ThemeProvider>
-        </StyledEngineProvider>
+        </CacheProvider>
       </SessionProvider>
     </DappWagmiProvider>
   );

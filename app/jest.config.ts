@@ -5,6 +5,7 @@ const config: Config.InitialOptions = {
   preset: 'ts-jest',
   globals: { 'ts-jest': { isolatedModules: true } },
   collectCoverage: true,
+  coveragePathIgnorePatterns: ['/node_modules/', '/tests/'],
   setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
   transform: {
     '\\.m?jsx?$': 'jest-esm-transformer',
@@ -19,6 +20,8 @@ const config: Config.InitialOptions = {
     '^@/libs/(.*)$': '<rootDir>/src/libs/$1',
     '^@/hooks/(.*)': '<rootDir>/src/hooks/$1',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+    '^react$': require.resolve('react'),
+    '^wagmi$': require.resolve('wagmi'),
   },
 };
 

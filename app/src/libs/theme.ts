@@ -37,7 +37,7 @@ const fontFamilyRoboto = {
   ),
 };
 
-const THEME = {
+const THEME: ThemeOptions = {
   typography: {
     ...fontFamilyRoboto,
     fontWeightLight: 100,
@@ -91,6 +91,30 @@ const THEME = {
   shape: {
     borderRadius: '0.5rem',
   },
+  components: {
+    // MuiCssBaseline: {
+    // "@global": {
+    //   "@font-face": [
+    //     Fonts.MetropolisRegular,
+    //     Fonts.MetropolisBold,
+    //     Fonts.RobotoRegular,
+    //     Fonts.RobotoMedium,
+    //     Fonts.RobotoBold
+    //   ]
+    // }
+    // },
+    MuiListItemText: {
+      styleOverrides: {
+        root: ({ ownerState }: { ownerState: { color?: string } }) => ({
+          ...(ownerState.color === 'primary' && {
+            ...fontFamilyMetropolis,
+            fontWeight: 500,
+            fontSize: '0.87rem',
+          }),
+        }),
+      },
+    },
+  },
 };
 
 const lightMuiTheme = {
@@ -113,30 +137,6 @@ const lightMuiTheme = {
   zIndex: {
     appBar: 1200,
     drawer: 1100,
-  },
-  components: {
-    // MuiCssBaseline: {
-    //   "@global": {
-    //     "@font-face": [
-    //       Fonts.MetropolisRegular,
-    //       Fonts.MetropolisBold,
-    //       Fonts.RobotoRegular,
-    //       Fonts.RobotoMedium,
-    //       Fonts.RobotoBold
-    //     ]
-    //   }
-    // },
-    MuiListItemText: {
-      styleOverrides: {
-        root: ({ ownerState }: { ownerState: { color: string } }) => ({
-          ...(ownerState.color === 'primary' && {
-            ...fontFamilyMetropolis,
-            fontWeight: 500,
-            fontSize: '0.87rem',
-          }),
-        }),
-      },
-    },
   },
   custom: {
     fontFamily: {
@@ -195,30 +195,6 @@ const darkMuiTheme = {
     appBar: 1200,
     drawer: 1100,
   },
-  components: {
-    // MuiCssBaseline: {
-    // "@global": {
-    //   "@font-face": [
-    //     Fonts.MetropolisRegular,
-    //     Fonts.MetropolisBold,
-    //     Fonts.RobotoRegular,
-    //     Fonts.RobotoMedium,
-    //     Fonts.RobotoBold
-    //   ]
-    // }
-    // },
-    MuiListItemText: {
-      styleOverrides: {
-        root: ({ ownerState }: { ownerState: { color: string } }) => ({
-          ...(ownerState.color === 'primary' && {
-            ...fontFamilyMetropolis,
-            fontWeight: 500,
-            fontSize: '0.87rem',
-          }),
-        }),
-      },
-    },
-  },
   custom: {
     fontFamily: {
       roboto: fontFamilyRoboto,
@@ -250,8 +226,8 @@ const darkMuiTheme = {
   },
 };
 
-export const lightTheme = responsiveFontSizes(createTheme({ ...THEME, ...(lightMuiTheme as ThemeOptions) }));
-export const darkTheme = responsiveFontSizes(createTheme({ ...THEME, ...(darkMuiTheme as ThemeOptions) }));
+export const lightTheme = responsiveFontSizes(createTheme({ ...THEME, ...lightMuiTheme } as ThemeOptions));
+export const darkTheme = responsiveFontSizes(createTheme({ ...THEME, ...darkMuiTheme } as ThemeOptions));
 export type { CustomTheme };
 const theme = responsiveFontSizes(createTheme(THEME));
 

@@ -1,5 +1,5 @@
 // you want to import from test-utils instead of testing-library/react since we overwrote the render function to support our wrapper providers
-import { render, screen } from '../test-utils';
+import { fireEvent, render, screen } from '../test-utils';
 import Home, { getServerSideProps } from 'pages/index';
 import { tools } from '@/libs/tools';
 
@@ -15,6 +15,7 @@ describe('Home page', () => {
     // array of tools
     expect(screen.getAllByRole('listitem').length).toEqual(tools.length);
     expect(screen.getAllByRole('link').length).toEqual(tools.length);
+    expect(screen.getAllByRole('link').length).toEqual(tools.length);
 
     const firstTool = screen.getAllByRole('listitem')[0];
     // Semantics check of 'link button' is anchor tag to tool page ( Accessibility test )
@@ -24,6 +25,14 @@ describe('Home page', () => {
     // name
     // @ts-ignore
     expect(firstTool.querySelector('p', { name: tools[0].name })).toBeInTheDocument();
+  });
+  it('should change darkmode', async () => {
+    render(<Home tools={tools.map(({ name, image }) => ({ name, image }))} />);
+    expect(screen.getAllByTestId('Brightness4OutlinedIcon').length).toEqual(1);
+
+    const button = screen.getByLabelText('mode')
+    fireEvent.click(button);
+    expect(screen.getAllByTestId('Brightness5OutlinedIcon').length).toEqual(1);
   });
   it('serverSideProps', async () => {
     // @ts-ignore

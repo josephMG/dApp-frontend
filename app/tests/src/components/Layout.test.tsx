@@ -1,4 +1,4 @@
-import { render, waitFor } from '../test-utils';
+import { render, waitFor } from 'tests/test-utils';
 import Layout from '@/components/layout';
 
 describe('Home page', () => {
