@@ -11,6 +11,7 @@ const config: Config.InitialOptions = {
     '\\.m?jsx?$': 'jest-esm-transformer',
     '^.+\\.(js|jsx|ts|tsx)$': '<rootDir>/node_modules/babel-jest',
   },
+  resetMocks: false,
   verbose: true,
   testEnvironment: 'jest-environment-jsdom',
   moduleNameMapper: {

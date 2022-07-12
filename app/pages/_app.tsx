@@ -37,13 +37,16 @@ interface MyAppProps extends AppProps {
 const App = ({ Component, emotionCache = clientSideEmotionCache, pageProps }: MyAppProps) => {
   // const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const [isMobile, setIsMobile] = useState(false);
+  const [muiTheme, setMuiTheme] = useState<typeof lightTheme>(lightTheme);
   const { darkMode } = useThemeMode();
 
   useEffect(() => {
     setIsMobile(!!navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(android)|(webOS)/i));
   }, []);
 
-  const muiTheme = darkMode ? lightTheme : darkTheme;
+  useEffect(() => {
+    setMuiTheme(darkMode ? lightTheme : darkTheme);
+  }, [darkMode]);
 
   return (
     <DappWagmiProvider>

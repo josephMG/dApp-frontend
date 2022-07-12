@@ -1,12 +1,11 @@
-import { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useBetween } from 'use-between';
 
 const useThemeMode = () => {
   const [darkMode, setDarkMode] = useState(0);
-
-  useEffect(() => {
+  React.useEffect(() => {
     // Setup darkmode
-    setDarkMode(localStorage.getItem('mode') ? parseInt(localStorage.getItem('mode') || '') : 0);
+    setDarkMode(localStorage.getItem('mode') ? parseInt(localStorage.getItem('mode')!) : 0);
   }, []);
   const toggleMode = () => {
     localStorage.setItem('mode', (1 - darkMode).toString());
