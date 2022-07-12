@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { ReactElement } from 'react';
 import NextImage from 'next/image';
 import { Avatar, Theme } from '@mui/material';
@@ -5,7 +6,7 @@ import { createStyles, makeStyles } from '@mui/styles';
 import { Image as ImageType } from '@/types';
 
 interface Props {
-  image: ImageType | undefined;
+  image?: ImageType;
   name: string;
 }
 
@@ -27,7 +28,7 @@ export default function Image({ image, name }: Props): ReactElement {
   }
 
   if (image.src.startsWith('/')) {
-    return <NextImage src={image.src || firstLetter} width={50} height={50} alt={name} data-testid="image" />;
+    return <NextImage src={image.src} width={50} height={50} alt={name} data-testid="image" />;
   }
 
   return (
