@@ -7,10 +7,11 @@ import {
   Brightness5Outlined as ToggleLightModeIcon,
 } from '@mui/icons-material';
 import { makeStyles, useTheme } from '@mui/styles';
-import useThemeMode from '@/hooks/useThemeMode';
 import { Theme } from '@mui/material';
+import useThemeMode from '@/hooks/useThemeMode';
 import { CustomTheme } from '@/libs/theme';
 import { useIsMounted } from '@/hooks/useIsMounted';
+import ConnectWallet from './ConnectWallet';
 /*
 import dynamic from 'next/dynamic';
 const ConnectWallet = dynamic(() => import('./ConnectWallet'), {
@@ -39,6 +40,7 @@ const Navbar = () => {
             <ToggleLightModeIcon htmlColor={theme.custom.palette.iconColor} />
           )}
         </IconButton>
+        {isMounted && <ConnectWallet />}
       </Toolbar>
     </AppBar>
   );

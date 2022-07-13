@@ -26,6 +26,7 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
         try {
           const siwe = new SiweMessage(JSON.parse(credentials?.message || '{}'));
           const nextAuthUrl = new URL(process.env.NEXTAUTH_URL || '');
+          // console.log(siwe);
           if (siwe.domain !== nextAuthUrl.host) {
             return null;
           }

@@ -5,7 +5,7 @@ import { makeStyles } from '@mui/styles';
 
 import { SiweMessage } from 'siwe';
 import { getCsrfToken, signIn } from 'next-auth/react';
-import { useSignMessage, useAccount, useNetwork, useDisconnect, useConnect } from 'wagmi';
+import { useSignMessage, useAccount, useDisconnect, useConnect } from 'wagmi';
 // import { useWeb3Modal } from '@/hooks/useWeb3';
 import { truncateAddress } from '@/libs/helpers';
 
@@ -41,26 +41,22 @@ const ConnectWallet = () => {
   };
   const connectData = useConnect();
   const { signMessageAsync } = useSignMessage();
-  const { chain: activeChain } = useNetwork();
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
 
   const handleClickConnect = async () => {
     try {
-      await connectData.connect({ connector: connectData.connectors[0] });
+      const res = await connectData.connectAsync({ connector: connectData.connectors[0] });
       const callbackUrl = '/protected';
-      const chainId = activeChain?.id;
-      if (!address || !chainId) return;
 
       setState((x) => ({ ...x, loading: true }));
-
       const message = new SiweMessage({
         domain: window.location.host,
-        address,
+        address: res.account,
         statement: 'Sign in with Ethereum to the app.',
         uri: window.location.origin,
         version: '1',
-        chainId,
+        chainId: res.chain?.id,
         nonce: state.nonce,
       });
       const signature = await signMessageAsync({
