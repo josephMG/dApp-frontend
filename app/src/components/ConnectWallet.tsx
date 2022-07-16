@@ -4,7 +4,8 @@ import Blockies from 'react-blockies';
 import { makeStyles } from '@mui/styles';
 
 import { SiweMessage } from 'siwe';
-import { getCsrfToken, signIn } from 'next-auth/react';
+import { getCsrfToken, signIn, signOut } from 'next-auth/react';
+
 import { useSignMessage, useAccount, useDisconnect, useConnect } from 'wagmi';
 // import { useWeb3Modal } from '@/hooks/useWeb3';
 import { truncateAddress } from '@/libs/helpers';
@@ -62,7 +63,7 @@ const ConnectWallet = () => {
       const signature = await signMessageAsync({
         message: message.prepareMessage(),
       });
-      signIn('credentials', { message: JSON.stringify(message), redirect: false, signature, callbackUrl });
+      signIn('credentials', { message: JSON.stringify(message), redirect: true, signature, callbackUrl });
       // Create SIWE message with pre-fetched nonce and sign with wallet
 
       // Verify signature
@@ -86,6 +87,7 @@ const ConnectWallet = () => {
 
   const handleClickAddress = useCallback(async () => {
     disconnect();
+    signOut();
   }, []);
 
   return (

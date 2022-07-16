@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   img: {
     width: 50,
-    marginRight: 20,
+    marginRight: 10,
   },
   title: {
     flexGrow: 1,
