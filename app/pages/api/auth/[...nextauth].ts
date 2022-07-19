@@ -5,6 +5,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import { getCsrfToken } from 'next-auth/react';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { SiweMessage } from 'siwe';
+import fetcher from '@/libs/fetcher';
 
 export default async function auth(req: NextApiRequest, res: NextApiResponse) {
   const providers = [
@@ -26,7 +27,7 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
         try {
           const siwe = new SiweMessage(JSON.parse(credentials?.message || '{}'));
           const nextAuthUrl = new URL(process.env.NEXTAUTH_URL || '');
-          // console.log(siwe);
+          console.log(siwe);
           if (siwe.domain !== nextAuthUrl.host) {
             return null;
           }
@@ -36,10 +37,19 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
           }
 
           await siwe.validate(credentials?.signature || '');
+          const { data: user } = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`, 'POST', {
+            dataObj: {
+              walletAddress: siwe.address,
+            },
+          });
+          console.log(user);
+
           return {
-            id: siwe.address,
+            id: user.user.id,
+            address: siwe.address,
           };
         } catch (e) {
+          console.log(e);
           return null;
         }
       },
@@ -52,6 +62,8 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
   if (isDefaultSigninPage) {
     providers.pop();
   }
+
+  console.log(req.method, req.url, req.query, req.body);
   return await NextAuth(req, res, {
     // https://next-auth.js.org/configuration/providers/oauth
     providers,
@@ -62,10 +74,19 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
     secret: process.env.SECRET,
     callbacks: {
       async session({ session, token }) {
-        session.address = token.sub;
-        session.user.name = token.sub;
+        session.user.id = token.sub;
+        session.user.address = token.address;
+        session.user.name = token.name;
+        session.user.email = token.email;
         session.user.image = 'https://www.fillmurray.com/128/128';
+        console.log(session);
         return session;
+      },
+      async jwt({ token, user }) {
+        if (user) {
+          token.address = user.address as string;
+        }
+        return token;
       },
     },
     debug: false,

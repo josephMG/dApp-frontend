@@ -63,7 +63,7 @@ const ConnectWallet = () => {
       const signature = await signMessageAsync({
         message: message.prepareMessage(),
       });
-      signIn('credentials', { message: JSON.stringify(message), redirect: true, signature, callbackUrl });
+      signIn('credentials', { message: JSON.stringify(message), redirect: false, signature, callbackUrl });
       // Create SIWE message with pre-fetched nonce and sign with wallet
 
       // Verify signature
@@ -87,7 +87,7 @@ const ConnectWallet = () => {
 
   const handleClickAddress = useCallback(async () => {
     disconnect();
-    signOut();
+    signOut({ callbackUrl: '/' });
   }, []);
 
   return (
