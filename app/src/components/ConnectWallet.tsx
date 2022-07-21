@@ -9,6 +9,7 @@ import { getCsrfToken, signIn, signOut } from 'next-auth/react';
 import { useSignMessage, useAccount, useDisconnect, useConnect } from 'wagmi';
 // import { useWeb3Modal } from '@/hooks/useWeb3';
 import { truncateAddress } from '@/libs/helpers';
+import fetcher from '@/libs/fetcher';
 
 const ConnectWallet = () => {
   const classes = useStyles();
@@ -30,10 +31,8 @@ const ConnectWallet = () => {
 
   const fetchNonce = async () => {
     try {
-      /*
-      const nonceRes = await fetch('/api/nonce')
-      const nonce = await nonceRes.text()
-       */
+      // const { data: nonce } = await fetcher('/siwe/nonce');
+
       const nonce = await getCsrfToken();
       setState((x) => ({ ...x, nonce }));
     } catch (error) {
@@ -63,21 +62,18 @@ const ConnectWallet = () => {
       const signature = await signMessageAsync({
         message: message.prepareMessage(),
       });
-      signIn('credentials', { message: JSON.stringify(message), redirect: false, signature, callbackUrl });
       // Create SIWE message with pre-fetched nonce and sign with wallet
 
       // Verify signature
-      /*
-      const verifyRes = await fetch('/api/verify', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const verifyRes = await fetcher('/siwe/verify', 'POST', {
+        dataObj: {
+          message: message.prepareMessage(),
+          signature,
         },
-        body: JSON.stringify({ message, signature }),
       });
       if (!verifyRes.ok) throw new Error('Error verifying message');
-       */
 
+      signIn('credentials', { message: JSON.stringify(message), redirect: false, signature, callbackUrl });
       setState((x) => ({ ...x, loading: false }));
     } catch (error) {
       setState((x) => ({ ...x, loading: false, nonce: undefined }));

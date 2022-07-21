@@ -2,9 +2,9 @@
 
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { getCsrfToken } from 'next-auth/react';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { SiweMessage } from 'siwe';
+import { getCsrfToken } from 'next-auth/react';
 import fetcher from '@/libs/fetcher';
 
 export default async function auth(req: NextApiRequest, res: NextApiResponse) {
@@ -27,7 +27,6 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
         try {
           const siwe = new SiweMessage(JSON.parse(credentials?.message || '{}'));
           const nextAuthUrl = new URL(process.env.NEXTAUTH_URL || '');
-          console.log(siwe);
           if (siwe.domain !== nextAuthUrl.host) {
             return null;
           }
@@ -37,15 +36,14 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
           }
 
           await siwe.validate(credentials?.signature || '');
-          const { data: user } = await fetcher(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`, 'POST', {
+          const { data } = await fetcher('/auth/login', 'POST', {
             dataObj: {
               walletAddress: siwe.address,
             },
           });
-          console.log(user);
 
           return {
-            id: user.user.id,
+            id: data.user.id,
             address: siwe.address,
           };
         } catch (e) {
@@ -74,11 +72,13 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
     secret: process.env.SECRET,
     callbacks: {
       async session({ session, token }) {
-        session.user.id = token.sub;
-        session.user.address = token.address;
-        session.user.name = token.name;
-        session.user.email = token.email;
-        session.user.image = 'https://www.fillmurray.com/128/128';
+        session.user = {
+          id: token.sub,
+          address: token.address,
+          name: token.name,
+          email: token.email,
+          image: 'https://www.fillmurray.com/128/128',
+        };
         console.log(session);
         return session;
       },

@@ -1,28 +1,31 @@
 /* eslint-disable  @typescript-eslint/no-explicit-any */
+import { IncomingHttpHeaders } from 'http';
 import https from 'https';
 import qs from 'qs';
 const agent = new https.Agent({
   rejectUnauthorized: false,
 });
 
-async function parseStatus(status: number, res: Promise<any>): Promise<Record<string, unknown>> {
-  const messages = await res;
+async function parseStatus(res: Response): Promise<Record<string, unknown>> {
+  const { status, ok } = res;
+  const data = await res.json();
   /*
   if (status >= 200 && status < 300) {
     return messages;
   }
   */
-  return { statusCode: status, data: messages };
+  return { statusCode: status, ok, ...data };
 }
 
-function requestHeaders(customHeaders: HeadersInit): HeadersInit {
+function requestHeaders(customHeaders: IncomingHttpHeaders): IncomingHttpHeaders {
   let headers = {
     Accept: 'application/json',
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
   };
 
-  headers = Object.assign({}, headers, customHeaders);
+  // headers = Object.assign({}, headers, customHeaders);
+  headers = { ...headers, ...customHeaders };
   return headers;
 }
 
@@ -32,13 +35,13 @@ function queryString(body) {
 }
 */
 
-export default async (url: string, method = 'GET', { dataObj = {}, headers = new Headers() } = {}): Promise<any> => {
+export default async (url: string, method = 'GET', { dataObj = {}, headers = {} } = {}): Promise<any> => {
   let options = {
     method,
-    headers: requestHeaders(headers),
+    headers: requestHeaders(headers) as HeadersInit,
   };
 
-  let path = url;
+  let path = /(http(s?)):\/\//i.test(url) ? url : `${process.env.NEXT_PUBLIC_BACKEND_URL}${url}`;
   if (method !== 'GET') {
     options = Object.assign(options, { body: dataObj instanceof FormData ? dataObj : JSON.stringify(dataObj) });
   } else {
@@ -51,5 +54,5 @@ export default async (url: string, method = 'GET', { dataObj = {}, headers = new
   }
 
   const res = await fetch(path, options);
-  return parseStatus(res.status, res.json());
+  return parseStatus(res);
 };
