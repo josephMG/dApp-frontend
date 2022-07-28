@@ -73,7 +73,7 @@ const ConnectWallet = () => {
       });
       if (!verifyRes.ok) throw new Error('Error verifying message');
 
-      signIn('credentials', { message: JSON.stringify(message), redirect: false, signature, callbackUrl });
+      signIn('credentials', { message: JSON.stringify(message), redirect: true, signature, callbackUrl });
       setState((x) => ({ ...x, loading: false }));
     } catch (error) {
       setState((x) => ({ ...x, loading: false, nonce: undefined }));

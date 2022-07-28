@@ -1,11 +1,13 @@
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 import { IncomingHttpHeaders } from 'http';
-import https from 'https';
 import qs from 'qs';
+import FormData from 'form-data';
+/*
+import https from 'https';
 const agent = new https.Agent({
   rejectUnauthorized: false,
 });
-
+*/
 async function parseStatus(res: Response): Promise<Record<string, unknown>> {
   const { status, ok } = res;
   const data = await res.json();
@@ -49,9 +51,11 @@ export default async (url: string, method = 'GET', { dataObj = {}, headers = {} 
     path += path.indexOf('?') === -1 && params !== '' ? `?${params}` : params;
     // options = Object.assign(options, { params: dataObj });
   }
+  /*
   if (process.env.NODE_ENV === 'development') {
     options = Object.assign(options, { agent });
   }
+  */
 
   const res = await fetch(path, options);
   return parseStatus(res);

@@ -83,8 +83,6 @@ const THEME: ThemeOptions = {
     },
   },
   palette: {
-    primary: { main: '#016848', dark: '#1f5849', light: '#388e3c' },
-    secondary: { main: '#8bc34a', dark: '#689f38', light: '#d0df63' },
     contrastThreshold: 3,
     tonalOffset: 0.5,
   },
@@ -120,9 +118,6 @@ const THEME: ThemeOptions = {
 const lightMuiTheme = {
   palette: {
     mode: 'light',
-    primary: {
-      main: '#FFF',
-    },
     secondary: {
       main: amber[500],
       light: '#feefc3',
@@ -172,9 +167,6 @@ const lightMuiTheme = {
 const darkMuiTheme = {
   palette: {
     mode: 'dark',
-    primary: {
-      main: '#212121',
-    },
     secondary: {
       main: amber[500],
       light: '#41331C',

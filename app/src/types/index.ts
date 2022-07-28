@@ -15,6 +15,7 @@ declare global {
       NEXTAUTH_SECRET?: string;
       NEXT_PUBLIC_RPC_URL?: string;
       NEXT_PUBLIC_BACKEND_URL?: string;
+      NEXT_PUBLIC_CONTRACT_ADDRESS?: string;
     }
   }
 }
